@@ -12,14 +12,14 @@ app.use(
   })
 )
 
-app.use(function(response, next) {
+app.use(function(request, response, next) {
   response.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
   response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
 
-app.get('/', (response) => {
+app.get('/', (request, response) => {
   response.json({ info: "Node.js, Express, and Postgres API" })
 })
 
