@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 CREATE TABLE entries (
 	uid SERIAL,
-	dates DATE,
+	dates TIMESTAMP,
 	entry VARCHAR(1000),
 	FOREIGN KEY (uid) REFERENCES users(uid),
 	PRIMARY KEY(uid, dates)
