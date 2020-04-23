@@ -1,15 +1,8 @@
-import {Pool} from 'pg';
+import { Database } from "./dbService"
 
-const pool = new Pool({
-  user: 'test',
-  host: 'localhost',
-  database: 'cerebral',
-  password: 'test',
-  port: 5432,
-})
 
-const getEntries = (request, response) => {
-  pool.query('SELECT * FROM entries', (error, results) => {
+const getEntries = (_request, response) => {
+  Database.query('SELECT * FROM entries', (error, results) => {
     if (error) {
       throw error
     }
@@ -21,7 +14,7 @@ const getEntryById = (request, response) => {
   const uid = parseInt(request.params.id)
   const {dates} = request.body
 
-  pool.query('SELECT * FROM entries WHERE uid = $1 AND dates = $2', [uid, dates], (error, results) => {
+  Database.query('SELECT * FROM entries WHERE uid = $1 AND dates = $2', [uid, dates], (error, results) => {
     if (error) {
       throw error
     }
@@ -32,7 +25,7 @@ const getEntryById = (request, response) => {
 const createEntry = (request, response) => {
   const { uid, dates, entry } = request.body
 
-  pool.query('INSERT INTO entries (uid, dates, entry) VALUES ($1, $2, $3)', [uid, dates, entry], (error, results) => {
+  Database.query('INSERT INTO entries (uid, dates, entry) VALUES ($1, $2, $3)', [uid, dates, entry], (error, results) => {
     if (error) {
       throw error
     }
@@ -44,7 +37,7 @@ const updateEntry = (request, response) => {
   const uid = parseInt(request.params.id)
   const { dates, entry } = request.body
 
-  pool.query(
+  Database.query(
     'UPDATE entries SET entry = $1 WHERE uid = $2 AND dates = $3',
     [entry, uid, dates],
     (error, results) => {
@@ -60,7 +53,7 @@ const deleteEntry = (request, response) => {
   const uid = parseInt(request.params.id)
   const {dates} = request.body
 
-  pool.query('DELETE FROM entries WHERE uid = $1 AND dates = $2', [uid, dates], (error, results) => {
+  Database.query('DELETE FROM entries WHERE uid = $1 AND dates = $2', [uid, dates], (error, results) => {
     if (error) {
       throw error
     }
