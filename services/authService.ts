@@ -11,14 +11,14 @@ const login = (request, response) => {
         if(error) throw error;
         const user = res.rows[0]
         if(!user){
-            response.json({
+            response.json({  //status(401) ?
                 success: false,
                 token: null,
                 err: 'User with this email cannot be found'
             });
         }
         //if (bcrypt.compare(password, user.password)) {
-        if(password === user.pass) {
+        else if(password === user.pass) {
             let token = jwt.sign({ uid: user.uid, username: user.username }, ACCESS_TOKEN_SECRET, { expiresIn: 129600 }); // Sigining the token
             response.json({
                 success: true,
