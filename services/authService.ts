@@ -56,4 +56,4 @@ const authenticateJWT = (req, res, next) => {
     }
 }
 
-export {login}
+export {login, authenticateJWT}
