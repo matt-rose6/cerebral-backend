@@ -27,8 +27,6 @@ const createUser = (request, response) => {
     if (error) {
       throw error
     }
-    //response.header('Access-Control-Allow-Origin', ['*'])
-    //console.log("[result]: `${result.insertId}`")
     response.status(201).send(result)
   })
 }

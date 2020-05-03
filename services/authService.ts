@@ -11,7 +11,7 @@ const login = (request, response) => {
         if(error) throw error;
         const user = res.rows[0]
         if(!user){
-            response.json({  //status(401) ?
+            response.json({ 
                 success: false,
                 token: null,
                 err: 'User with this email cannot be found'
@@ -27,7 +27,6 @@ const login = (request, response) => {
                 user: user
             });
         } else {
-            // response.status(401).json({
             response.json({
                 success: false,
                 token: null,
@@ -39,15 +38,12 @@ const login = (request, response) => {
 
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
-
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-
         jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
             if (err) {
                 return res.sendStatus(403);
             }
-
             req.user = user;
             next();
         });
