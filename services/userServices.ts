@@ -50,7 +50,7 @@ const updateUser = (request, response) => {
 const deleteUser = (request, response) => {
   const uid = parseInt(request.params.id)
 
-  Database.query('DELETE FROM users WHERE uid = $1', [uid], (error, result) => {
+  Database.query('DELETE FROM users WHERE uid = $1', [uid], (error, _result) => {
     if (error) {
       throw error
     }

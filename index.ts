@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { routes } from './routes';
-import { authenticateJWT } from './services/authService';
+//import { authenticateJWT } from './services/authService';
 const app = express()
 const port = 3001
 
@@ -13,8 +13,8 @@ app.use(
 )
 
 app.use((_request, response, next) => {
-  response.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
-  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
   response.header("Access-Control-Allow-Headers", "Content-Type, authorization"); //allows for headers with authorization
   next();
 });

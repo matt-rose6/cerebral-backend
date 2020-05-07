@@ -14,7 +14,7 @@ const login = (request, response) => {
             response.json({ 
                 success: false,
                 token: null,
-                err: 'User with this email cannot be found'
+                err: 'Account with this email cannot be found'
             });
         }
         //if (bcrypt.compare(password, user.password)) {
@@ -30,9 +30,16 @@ const login = (request, response) => {
             response.json({
                 success: false,
                 token: null,
-                err: 'Username or password is incorrect'
+                err: 'Password is incorrect'
             });
         }
+    })
+}
+
+const verifyToken = (req, res) => {
+    jwt.verify(req.token, ACCESS_TOKEN_SECRET, (err) => {
+        if(err) res.sendStatus(403);
+        else res.sendStatus(200);
     })
 }
 
@@ -41,9 +48,7 @@ const authenticateJWT = (req, res, next) => {
     if (authHeader) {
         const token = authHeader.split(' ')[1];
         jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) {
-                return res.sendStatus(403);
-            }
+            if (err) res.sendStatus(403);
             req.user = user;
             next();
         });
@@ -52,4 +57,4 @@ const authenticateJWT = (req, res, next) => {
     }
 }
 
-export {login, authenticateJWT}
+export {login, verifyToken, authenticateJWT}

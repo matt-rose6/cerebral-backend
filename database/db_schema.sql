@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS entries;
-DROP TABLE IF EXISTS emotions;
+DROP TABLE IF EXISTS cesdrSurvey;
+DROP TABLE IF EXISTS phq9Survey;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
@@ -19,21 +20,45 @@ CREATE TABLE entries (
 	PRIMARY KEY(uid, dates)
 );
 
-CREATE TABLE emotions (
+CREATE TABLE cesdrSurvey (
 	uid SERIAL,
-	dates DATE,
-	rating INT,
+	dates TIMESTAMP,
+	q1 INT,
+	q2 INT,
+	q3 INT,
+	q4 INT,
+	q5 INT,
+	q6 INT,
+	q7 INT,
+	q8 INT,
+	q9 INT,
+	q10 INT,
+	q11 INT,
+	q12 INT,
+	q13 INT,
+	q14 INT,
+	q15 INT,
+	q16 INT,
+	q17 INT,
+	q18 INT,
+	q19 INT,
+	q20 INT,
 	FOREIGN KEY (uid) REFERENCES users(uid),
 	PRIMARY KEY(uid, dates)
 );
 
-CREATE TABLE "session" (
-  "sid" varchar NOT NULL COLLATE "default",
-	"sess" json NOT NULL,
-	"expire" timestamp(6) NOT NULL
-)
-WITH (OIDS=FALSE);
-
-ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
-
-CREATE INDEX "IDX_session_expire" ON "session" ("expire");
+CREATE TABLE phq9Survey (
+	uid SERIAL,
+	dates TIMESTAMP,
+	q1 INT,
+	q2 INT,
+	q3 INT,
+	q4 INT,
+	q5 INT,
+	q6 INT,
+	q7 INT,
+	q8 INT,
+	q9 INT,
+	FOREIGN KEY (uid) REFERENCES users(uid),
+	PRIMARY KEY(uid, dates)
+);
