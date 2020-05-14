@@ -1,30 +1,35 @@
-
-import {getEmotionsService, getEmotionByIdService, createEmotionService, updateEmotionService, deleteEmotionService} from "../services/emotionServices";
+import {
+  getEmotionsService,
+  getEmotionByIdService,
+  createEmotionService,
+  updateEmotionService,
+  deleteEmotionService,
+} from '../services/emotionServices';
 
 const getEmotionList = (req, res) => {
-	return getEmotionsService(req, res);
+  return getEmotionsService(req, res);
 };
 
 const getEmotionById = (req, res) => {
-	return getEmotionByIdService(req, res);
+  return getEmotionByIdService(req, res);
 };
 
 const addEmotion = (req, res) => {
-	return createEmotionService(req, res);
+  return createEmotionService(req, res);
 };
 
 const updateEmotion = (req, res) => {
-	return updateEmotionService(req, res);
+  return updateEmotionService(req, res);
 };
 
 const deleteEmotion = (req, res) => {
-	return deleteEmotionService(req, res);
+  return deleteEmotionService(req, res);
 };
 
 export {
-	getEmotionList,
-	getEmotionById,
-	addEmotion,
-	updateEmotion,
-	deleteEmotion
-}
+  getEmotionList,
+  getEmotionById,
+  addEmotion,
+  updateEmotion,
+  deleteEmotion,
+};

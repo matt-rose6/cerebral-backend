@@ -1,5 +1,11 @@
 import * as express from 'express';
-import {getEntryList, getEntryById, addEntry, updateEntry, deleteEntry} from "../controllers/entryController";
+import {
+  getEntryList,
+  getEntryById,
+  addEntry,
+  updateEntry,
+  deleteEntry,
+} from '../controllers/entryController';
 
 const router = express.Router();
 
@@ -9,4 +15,4 @@ router.post('/addEntry', addEntry);
 router.put('/updateEntry/:id', updateEntry);
 router.delete('/deleteEntry/:id', deleteEntry);
 
-export {router as entryRouter};
+export { router as entryRouter };

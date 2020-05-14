@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { login,verifyToken } from '../services/authService';
+import { login, verifyToken } from '../services/authService';
 var router = express.Router();
 
-router.post('/login', login)
-router.post('/authenticate', verifyToken)
+router.post('/login', login);
+router.post('/authenticate', verifyToken);
 
-export {router as authRouter};
+export { router as authRouter };
