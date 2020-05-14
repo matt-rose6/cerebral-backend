@@ -1,8 +1,10 @@
 import { Database } from './dbService';
 import * as jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
 //import * as bcrypt from 'bcrypt';
 
-const ACCESS_TOKEN_SECRET = 'secretkey';
+dotenv.config();
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 const login = (request, response) => {
   const email = request.body.email;
@@ -25,7 +27,7 @@ const login = (request, response) => {
         let token = jwt.sign(
           { uid: user.uid, username: user.username },
           ACCESS_TOKEN_SECRET,
-          { expiresIn: 129600 }
+          { expiresIn:  10 } //129600 }
         ); // Sigining the token
         response.json({
           success: true,
@@ -45,24 +47,29 @@ const login = (request, response) => {
 };
 
 const verifyToken = (req, res) => {
-  jwt.verify(req.token, ACCESS_TOKEN_SECRET, (err) => {
-    if (err) res.sendStatus(403);
-    else res.sendStatus(200);
+  jwt.verify(req.body.token, ACCESS_TOKEN_SECRET, (err) => {
+    if (err) res.json({
+      success: false,
+      error: 'Could not validate the token'
+    })
+    else res.json({
+      success: true
+    });
   });
 };
 
-const authenticateJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
-      if (err) res.sendStatus(403);
-      req.user = user;
-      next();
-    });
-  } else {
-    res.sendStatus(401);
-  }
-};
+// const authenticateJWT = (req, res, next) => {
+//   const authHeader = req.headers.authorization;
+//   if (authHeader) {
+//     const token = authHeader.split(' ')[1];
+//     jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
+//       if (err) res.sendStatus(403);
+//       req.user = user;
+//       next();
+//     });
+//   } else {
+//     res.sendStatus(401);
+//   }
+// };
 
-export { login, verifyToken, authenticateJWT };
+export { login, verifyToken }; //authenticateJWT

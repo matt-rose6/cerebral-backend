@@ -3,6 +3,6 @@ import { login, verifyToken } from '../services/authService';
 var router = express.Router();
 
 router.post('/login', login);
-router.post('/authenticate', verifyToken);
+router.post('/validateToken', verifyToken);
 
 export { router as authRouter };
