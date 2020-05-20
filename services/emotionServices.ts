@@ -1,35 +1,29 @@
 import { Database } from './dbService';
 const DB_NAME = 'cesdrSurvey'; //cesdrSurvey or phq9Survey
 
-const getEmotions = (_request, response) => {
-  Database.query('SELECT * FROM ' + DB_NAME, (error, result) => {
-    if (error) {
-      throw error;
-    }
+const getEmotions = async (_request, response) => {
+  try {
+    const result = await Database.query('SELECT * FROM ' + DB_NAME)
     response.status(200).json(result.rows);
-  });
+  } catch(err) {
+    response.send({error: '[emotionServices.ts] getEmotions error'})
+  }
 };
 
-const getEmotionById = (request, response) => {
-  const uid = parseInt(request.params.id);
-
-  Database.query(
-    'SELECT * FROM ' + DB_NAME + ' WHERE uid = $1',
-    [uid],
-    (error, result) => {
-      if (error) {
-        throw error;
-      }
-      response.status(200).json(result.rows);
-    }
-  );
+const getEmotionById = async (request, response) => {
+  try {
+    const uid = parseInt(request.params.id);
+    const result = await Database.query('SELECT * FROM ' + DB_NAME + ' WHERE uid = $1', [uid])
+    response.status(200).json(result.rows);  
+  } catch(err) {
+    response.send({error: '[emotionServices.ts] getEmotionsById error'})
+  } 
 };
 
-const createEmotion = (request, response) => {
+const createEmotion = async (request, response) => {
   const { uid, dates, survey } = request.body;
-  //console.log(survey)
 
-  Database.query(
+  await Database.query(
     'INSERT INTO ' +
       DB_NAME +
       ' (uid, dates, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)',
@@ -56,46 +50,30 @@ const createEmotion = (request, response) => {
       survey[17],
       survey[18],
       survey[19],
-    ],
-    (error, _result) => {
-      if (error) {
-        throw error;
-      }
-      response.status(201).send(`Emotion added with date: ${dates}`);
-    }
-  );
+    ])
+  response.status(201).send(`Emotion added with date: ${dates}`);
 };
 
-const updateEmotion = (request, response) => {
-  const uid = parseInt(request.params.id);
-  const { dates, rating } = request.body;
-
-  Database.query(
-    'UPDATE ' + DB_NAME + ' SET rating = $1 WHERE uid = $3 AND dates = $4',
-    [rating, uid, dates],
-    (error, _result) => {
-      if (error) {
-        throw error;
-      }
-      response.status(200).send(`Emotion modified with date: ${dates}`);
-    }
-  );
+const updateEmotion = async (request, response) => {
+  try {
+    const uid = parseInt(request.params.id);
+    const { dates, rating } = request.body;
+    await Database.query('UPDATE ' + DB_NAME + ' SET rating = $1 WHERE uid = $3 AND dates = $4', [rating, uid, dates])
+    response.status(200).send(`Emotion modified with date: ${dates}`);
+  } catch (err) {
+    response.send({error: '[emotionServices.ts] updateEmotion error'})
+  }
 };
 
-const deleteEmotion = (request, response) => {
-  const uid = parseInt(request.params.id);
-  const { dates } = request.body;
-
-  Database.query(
-    'DELETE FROM ' + DB_NAME + ' WHERE uid = $1 AND dates = $2',
-    [uid, dates],
-    (error, result) => {
-      if (error) {
-        throw error;
-      }
-      response.status(200).send(`Emotion deleted with date: ${dates}`);
-    }
-  );
+const deleteEmotion = async (request, response) => {
+  try {
+    const uid = parseInt(request.params.id);
+    const { dates } = request.body;
+    await Database.query('DELETE FROM ' + DB_NAME + ' WHERE uid = $1 AND dates = $2', [uid, dates])
+    response.status(200).send(`Emotion deleted with date: ${dates}`);
+  } catch (err) {
+    response.send({error: '[emotionServices.ts] deleteEmotion error'})
+  }
 };
 
 export {

@@ -1,0 +1,5 @@
+runtime: nodejs
+service: api
+env: flex
+beta_settings:
+  cloud_sql_instances: cerebral-277223:us-central1:cerebral-test

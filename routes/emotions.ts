@@ -6,12 +6,13 @@ import {
   updateEmotion,
   deleteEmotion,
 } from '../controllers/emotionController';
+import { authenticateHeader } from '../services/authService';
 var router = express.Router();
 
-router.get('/getEmotion', getEmotionList);
-router.get('/getEmotion/:id', getEmotionById);
-router.post('/addEmotion', addEmotion);
-router.put('/updateEmotion/:id', updateEmotion);
-router.delete('/deleteEmotion/:id', deleteEmotion);
+router.get('/getEmotion', authenticateHeader, getEmotionList);
+router.get('/getEmotion/:id', authenticateHeader, getEmotionById);
+router.post('/addEmotion', authenticateHeader, addEmotion);
+router.put('/updateEmotion/:id', authenticateHeader, updateEmotion);
+router.delete('/deleteEmotion/:id', authenticateHeader, deleteEmotion);
 
 export { router as emotionRouter };

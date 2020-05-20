@@ -6,13 +6,13 @@ import {
   updateEntry,
   deleteEntry,
 } from '../controllers/entryController';
-
+import { authenticateHeader } from '../services/authService';
 const router = express.Router();
 
-router.get('/getEntries', getEntryList);
-router.get('/getEntry/:id', getEntryById);
-router.post('/addEntry', addEntry);
-router.put('/updateEntry/:id', updateEntry);
-router.delete('/deleteEntry/:id', deleteEntry);
+router.get('/getEntries', authenticateHeader, getEntryList);
+router.get('/getEntry/:id', authenticateHeader, getEntryById);
+router.post('/addEntry', authenticateHeader, addEntry);
+router.put('/updateEntry/:id', authenticateHeader, updateEntry);
+router.delete('/deleteEntry/:id', authenticateHeader, deleteEntry);
 
 export { router as entryRouter };

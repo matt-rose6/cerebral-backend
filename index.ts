@@ -4,6 +4,7 @@ import { routes } from './routes';
 //import { authenticateJWT } from './services/authService';
 const app = express();
 const port = 3001;
+//const port = 8080;
 
 app.use(bodyParser.json());
 app.use(
@@ -12,14 +13,18 @@ app.use(
   })
 );
 
-app.use((_request, response, next) => {
+app.use((request, response, next) => {
   response.header('Access-Control-Allow-Origin', '*');
   response.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
   response.header(
     'Access-Control-Allow-Headers',
-    'Content-Type, authorization'
+    'Content-Type, Authorization'
   ); //allows for headers with authorization
-  next();
+  if ('OPTIONS' === request.method) {
+    response.sendStatus(200);
+  } else {
+    next();
+  }
 });
 
 app.get('/', (_request, response) => {
