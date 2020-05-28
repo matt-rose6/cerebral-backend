@@ -28,4 +28,4 @@ const client = new Pool({
   database: CLOUD_DB,
 });
 
-export { client as Database };
+export { pool as Database };

@@ -44,9 +44,9 @@ const createUser = (request, response) => {
   })
 };
 
-const updateUser = (request, response) => {
+const updateUser = (request, response) => { 
   const uid = parseInt(request.params.id);
-  const { firstname, lastname, email, pass, outreach } = request.body;
+  const { firstname, lastname, email, outreach } = request.body;
   differentUserHasEmail(email, uid).then(otherUsers => {
     //other users exist in database with this email
     if(otherUsers.rows.length>0) {
@@ -55,8 +55,8 @@ const updateUser = (request, response) => {
       //user can't update password now but should be able to in the future
       //use bcryt here when that happnes
       Database.query(
-        'UPDATE users SET firstname = $1, lastname = $2, email = $3, pass = $4, outreach = $5 WHERE uid = $6',
-        [firstname, lastname, email, pass, outreach, uid],
+        'UPDATE users SET firstname = $1, lastname = $2, email = $3, outreach = $4 WHERE uid = $5',
+        [firstname, lastname, email, outreach, uid],
         (error, _result) => {
           if (error) {
             throw error;
