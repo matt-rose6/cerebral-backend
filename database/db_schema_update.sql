@@ -1,55 +1,66 @@
-DROP TABLE IF EXISTS entries;
+DROP TABLE IF EXISTS journal;
 DROP TABLE IF EXISTS cesdrSurvey;
 DROP TABLE IF EXISTS phq9Survey;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS user;
 
-CREATE TABLE users (
+CREATE TABLE User (
 	uid SERIAL PRIMARY KEY,
 	firstname VARCHAR(255) NOT NULL,
 	lastname VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL UNIQUE,
 	pass VARCHAR(255) NOT NULL,
 	outreach BOOLEAN NOT NULL,
-    therapist_email VARCHAR(255)
+    therapistEmail VARCHAR(255),
+    isTherapist BOOLEAN
 );
 
-CREATE TABLE entries (
-    entry_id SERIAL PRIMARY KEY,
+CREATE TABLE Journal (
+    journalId SERIAL PRIMARY KEY,
 	uid SERIAL,
 	dates TIMESTAMP,
 	entry VARCHAR(1000),
-	FOREIGN KEY (uid) REFERENCES users(uid),
+    journalPrompt VARCHAR(255),
+    motivation VARCHAR(255),
+	FOREIGN KEY (uid) REFERENCES user(uid)
 	-- PRIMARY KEY(uid, dates)
 );
 
-CREATE TABLE sentiment (
-    sentiment_id SERIAL PRIMARY KEY,
+CREATE TABLE JournalPrompt (
+    promptId SERIAL PRIMARY KEY
     uid SERIAL,
-    entry_id SERIAL,
+    prompt VARCHAR(255) NOT NULL,
+    dates TIMESTAMP,
+    FOREIGN KEY (uid) REFERENCES user(uid)
+);
+
+CREATE TABLE Sentiment (
+    sentimentId SERIAL PRIMARY KEY,
+    uid SERIAL,
+    journalId SERIAL,
     dates TIMESTAMP,
     score FLOAT,
     magnitude FLOAT,
-    FOREIGN KEY(uid) REFERENCES users(uid)
-    FOREIGN KEY(entry_id) REFERENCES entries(entry_id)
-    -- PRIMARY KEY(uid, entry_id)
+    FOREIGN KEY(uid) REFERENCES user(uid),
+    FOREIGN KEY(journalId) REFERENCES journal(journalId)
+    -- PRIMARY KEY(uid, journalId)
 );
 
-CREATE TABLE thoughtRecordSurvey (
+CREATE TABLE ThoughtRecordSurvey (
     uid SERIAL,
     dates TIMESTAMP,
     trigger VARCHAR(255) NOT NULL,
     feelings VARCHAR(255) NOT NULL,
     intensity INT NOT NULL,
-    unhelpful_thoughts VARCHAR(255),
+    unhelpfulThoughts VARCHAR(255),
     support VARCHAR(255),
     opposition VARCHAR(255),
-    realistic_thoughts VARCHAR(255),
+    realisticThoughts VARCHAR(255),
     outcome VARCHAR(255),
-    FOREIGN KEY (uid) REFERENCES users(uid),
+    FOREIGN KEY (uid) REFERENCES user(uid),
     PRIMARY KEY(uid, dates)
 );
 
-CREATE TABLE cesdrSurvey (
+CREATE TABLE CesdrSurvey (
 	uid SERIAL,
 	dates TIMESTAMP,
 	appetite INT NOT NULL,
@@ -66,17 +77,17 @@ CREATE TABLE cesdrSurvey (
 	slow INT NOT NULL,
 	fidgety INT NOT NULL,
 	suicidal INT NOT NULL,
-	self_harm INT NOT NULL,
+	selfHarm INT NOT NULL,
 	tired INT NOT NULL,
 	shame INT NOT NULL,
-	weight_loss INT NOT NULL,
+	weightloss INT NOT NULL,
 	sleepless INT NOT NULL,
 	perspective INT NOT NULL,
-	FOREIGN KEY (uid) REFERENCES users(uid),
+	FOREIGN KEY (uid) REFERENCES user(uid),
 	PRIMARY KEY(uid, dates)
 );
 
-CREATE TABLE phq8Survey (
+CREATE TABLE Phq8Survey (
 	uid SERIAL,
 	dates TIMESTAMP,
 	interest INT NOT NULL,
@@ -86,7 +97,7 @@ CREATE TABLE phq8Survey (
 	appetite INT NOT NULL,
 	failure INT NOT NULL,
 	concentration INT NOT NULL,
-	slow_or_fidgety INT NOT NULL,
-	FOREIGN KEY (uid) REFERENCES users(uid),
+	slowOrFidgety INT NOT NULL,
+	FOREIGN KEY (uid) REFERENCES user(uid),
 	PRIMARY KEY(uid, dates)
 );
