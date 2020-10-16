@@ -9,24 +9,19 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const login = (request, response) => {
   const email = request.body.email;
   const password = request.body.pass;
-  Database.query(
-    'SELECT * FROM users WHERE email = $1',
-    [email],
-    (error, res) => {
-      if (error) throw error;
-      const user = res.rows[0];
-      if (!user) {
-        response.json({
-          success: false,
-          token: null,
-          err: 'Account with this email cannot be found',
-        });
-      }
-      else {
-        bcrypt.compare(password, user.pass, function(err, res) {
-          if(res===true){
+  Database.collection("user").where("email", "==", email).get().then(res => {
+    if(res.empty){
+      response.json({
+        success: false,
+        token: null,
+        err: 'Account with this email cannot be found',
+      });
+    } else {
+      res.docs.forEach(doc => {
+        bcrypt.compare(password, doc.data().pass, function(_err, res) {
+          if(res){
             let token = jwt.sign(
-              { uid: user.uid, username: user.username },
+              { uid: doc.id, username: doc.data().username },
               ACCESS_TOKEN_SECRET,
               { expiresIn:  129600 }
             ); // Sigining the token
@@ -34,7 +29,7 @@ const login = (request, response) => {
               success: true,
               err: null,
               token: token,
-              user: user,
+              uid: doc.id,
             });
           }
           else {
@@ -45,9 +40,9 @@ const login = (request, response) => {
             })
           }
         })
-      }
+      })
     }
-  );
+  })
 };
 
 const verifyToken = (req, res) => {

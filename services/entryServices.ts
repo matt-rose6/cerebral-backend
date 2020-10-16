@@ -1,53 +1,91 @@
 import { Database } from './dbService';
+import { sentimentAnalysis } from './languageServices';
 
 const getEntries = async (_request, response) => {
   try {
-    const result = Database.query('SELECT * FROM entries')
-    return response.status(200).json(result.rows);
-  } catch(err){
-    return response.send({error: '[entryServices.ts] getEntries error'})
+    const result = await Database.collection('journal').get();
+    var res = [];
+    result.forEach((doc) => {
+      res.push(doc.data());
+    });
+    response.status(200).send(res);
+  } catch (err) {
+    response.send({ error: '[entryService.ts] getEntries error' });
   }
 };
 
 const getEntryById = async (request, response) => {
   try {
-    const uid = parseInt(request.params.id);
-    const result = await Database.query('SELECT * FROM entries WHERE uid = $1', [uid])
-    return response.status(200).json(result.rows);
-  } catch {
-    return response.send({error: '[entryServices.ts] getEntryById error'})
+    const uid = request.params.id;
+    const result = await Database.collection('journal')
+      .where('uid', '==', uid)
+      .get();
+    let res = [];
+    result.forEach((doc) => {
+      res.push(doc.data());
+    });
+    response.status(200).send(res);
+  } catch (err) {
+    response.send({ error: '[entryService.ts] getEntryById error' });
   }
 };
 
 const createEntry = async (request, response) => {
   try {
     const { uid, dates, entry } = request.body;
-    Database.query('INSERT INTO entries (uid, dates, entry) VALUES ($1, $2, $3)',[uid, dates, entry])
+    const sentiment = sentimentAnalysis(entry);
+    Database.collection('journal').add({
+      uid: uid,
+      dates: dates,
+      entry: entry,
+      score: (await sentiment).score,
+      magnitude: (await sentiment).magnitude,
+    });
     response.status(201).send(`Entry added with date: ${dates}`);
   } catch (err) {
-    response.send({error: '[entryServices.ts] createEntry error'})
+    response.send({ error: '[entryServices.ts] createEntry error' });
   }
 };
 
 const updateEntry = async (request, response) => {
   try {
-    const uid = parseInt(request.params.id);
+    const uid = request.params.id;
     const { dates, entry } = request.body;
-    await Database.query('UPDATE entries SET entry = $1 WHERE uid = $2 AND dates = $3',[entry, uid, dates])
+    const sentiment = sentimentAnalysis(entry);
+    const docToUpdate = await Database.collection('journal')
+      .where('uid', '==', uid)
+      .where('dates', '==', dates);
+    docToUpdate.get().then((querySnapshot) => {
+      querySnapshot.forEach(async (doc) => {
+        doc.ref.update({
+          entry: entry,
+          dates: dates,
+          score: (await sentiment).score,
+          magnitude: (await sentiment).magnitude,
+        });
+      });
+    });
     response.status(200).send(`Entry modified with date: ${dates}`);
   } catch (err) {
-    response.send({error: '[entryServices.ts] updateEntry error'})
+    response.send({ error: '[entryServices.ts] updateEntry error' });
   }
 };
 
 const deleteEntry = async (request, response) => {
   try {
-    const uid = parseInt(request.params.id);
+    const uid = request.params.id;
     const { dates } = request.body;
-    await Database.query('DELETE FROM entries WHERE uid = $1 AND dates = $2',[uid, dates])
+    const docToDelete = await Database.collection('journal')
+      .where('uid', '==', uid)
+      .where('dates', '==', dates);
+    docToDelete.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        doc.ref.delete();
+      });
+    });
     response.status(200).send(`Entry deleted with date: ${dates}`);
-  } catch(err) {
-    response.send({error: '[entryServices.ts] updateEntry error'})
+  } catch (err) {
+    response.send({ error: '[entryServices.ts] updateEntry error' });
   }
 };
 
