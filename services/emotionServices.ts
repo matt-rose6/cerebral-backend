@@ -1,78 +1,101 @@
 import { Database } from './dbService';
-const DB_NAME = 'cesdrSurvey'; //cesdrSurvey or phq9Survey
 
 const getEmotions = async (_request, response) => {
   try {
-    const result = await Database.query('SELECT * FROM ' + DB_NAME)
-    response.status(200).json(result.rows);
-  } catch(err) {
-    response.send({error: '[emotionServices.ts] getEmotions error'})
+    const result = await Database.collection('bdiSurvey').get();
+    var res = [];
+    result.forEach((doc) => {
+      res.push(doc.data());
+    });
+    response.status(200).send({ data: res });
+  } catch (err) {
+    response.send({ error: '[emotionServices.ts] getEmotions error' });
   }
 };
 
 const getEmotionById = async (request, response) => {
   try {
-    const uid = parseInt(request.params.id);
-    const result = await Database.query('SELECT * FROM ' + DB_NAME + ' WHERE uid = $1', [uid])
-    response.status(200).json(result.rows);  
-  } catch(err) {
-    response.send({error: '[emotionServices.ts] getEmotionsById error'})
-  } 
+    const uid = request.params.id;
+    const result = await Database.collection('bdiSurvey')
+      .where('uid', '==', uid)
+      .get();
+    let res = [];
+    result.forEach((doc) => {
+      res.push(doc.data());
+    });
+    response.status(200).send(res);
+  } catch (err) {
+    response.send({ error: '[emotionServices.ts] getEmotionsById error' });
+  }
 };
 
 const createEmotion = async (request, response) => {
   const { uid, dates, survey } = request.body;
 
-  await Database.query(
-    'INSERT INTO ' +
-      DB_NAME +
-      ' (uid, dates, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17, q18, q19, q20) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)',
-    [
-      uid,
-      dates,
-      survey[0],
-      survey[1],
-      survey[2],
-      survey[3],
-      survey[4],
-      survey[5],
-      survey[6],
-      survey[7],
-      survey[8],
-      survey[9],
-      survey[10],
-      survey[11],
-      survey[12],
-      survey[13],
-      survey[14],
-      survey[15],
-      survey[16],
-      survey[17],
-      survey[18],
-      survey[19],
-    ])
+  await Database.collection('bdiSurvey').add({
+    uid: uid,
+    dates: dates,
+    sad: survey[0],
+    hopeless: survey[1],
+    failure: survey[2],
+    dissatisfied: survey[3],
+    guilt: survey[4],
+    punishment: survey[5],
+    dissappointment: survey[6],
+    blame: survey[7],
+    suicidal: survey[8],
+    crying: survey[9],
+    irritation: survey[10],
+    antisocial: survey[11],
+    indecision: survey[12],
+    ugliness: survey[13],
+    motivation: survey[14],
+    restless: survey[15],
+    tiredness: survey[16],
+    appetite: survey[17],
+    weight: survey[18],
+    physical: survey[19],
+    libido: survey[20],
+  });
   response.status(201).send(`Emotion added with date: ${dates}`);
 };
 
 const updateEmotion = async (request, response) => {
   try {
-    const uid = parseInt(request.params.id);
+    const uid = request.params.id;
     const { dates, rating } = request.body;
-    await Database.query('UPDATE ' + DB_NAME + ' SET rating = $1 WHERE uid = $3 AND dates = $4', [rating, uid, dates])
-    response.status(200).send(`Emotion modified with date: ${dates}`);
+    const docToUpdate = await Database.collection('bdiSurvey')
+      .where('uid', '==', uid)
+      .where('dates', '==', dates);
+    docToUpdate.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        doc.ref.update({
+          rating: rating,
+          dates: dates,
+        });
+      });
+    });
+    response.status(200).send(`Entry modified with date: ${dates}`);
   } catch (err) {
-    response.send({error: '[emotionServices.ts] updateEmotion error'})
+    response.send({ error: '[emotionServices.ts] updateEmotion error' });
   }
 };
 
 const deleteEmotion = async (request, response) => {
   try {
-    const uid = parseInt(request.params.id);
+    const uid = request.params.id;
     const { dates } = request.body;
-    await Database.query('DELETE FROM ' + DB_NAME + ' WHERE uid = $1 AND dates = $2', [uid, dates])
-    response.status(200).send(`Emotion deleted with date: ${dates}`);
+    const docToDelete = await Database.collection('bdiSurvey')
+      .where('uid', '==', uid)
+      .where('dates', '==', dates);
+    docToDelete.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        doc.ref.delete();
+      });
+    });
+    response.status(200).send(`Entry deleted with date: ${dates}`);
   } catch (err) {
-    response.send({error: '[emotionServices.ts] deleteEmotion error'})
+    response.send({ error: '[emotionServices.ts] deleteEmotion error' });
   }
 };
 

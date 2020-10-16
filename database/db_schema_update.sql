@@ -12,6 +12,7 @@ CREATE TABLE User (
 	outreach BOOLEAN NOT NULL,
     therapistEmail VARCHAR(255),
     isTherapist BOOLEAN
+    -- ^^ not enough lol
 );
 
 CREATE TABLE Journal (
@@ -31,6 +32,7 @@ CREATE TABLE JournalPrompt (
     prompt VARCHAR(255) NOT NULL,
     dates TIMESTAMP,
     FOREIGN KEY (uid) REFERENCES user(uid)
+    -- tag ?
 );
 
 CREATE TABLE Sentiment (
